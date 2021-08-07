@@ -1,26 +1,20 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect, useRef, useState } from "react";
+import io, { Socket } from "socket.io-client";
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    const [clientCount, setClientCount] = useState<number>(0);
+    const socketRef = useRef<Socket>();
+
+    useEffect(() => {
+        socketRef.current = io("http://192.168.1.7:3003/");
+        console.log(socketRef);
+
+        socketRef.current?.on("client-count", (message: { data: number }) => {
+            setClientCount(message.data);
+        });
+    }, []);
+
+    return <div className="App">Clients {clientCount}</div>;
 }
 
 export default App;
